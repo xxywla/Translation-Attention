@@ -12,7 +12,7 @@ def batch_predict(input_tensor, encoder, decoder, en_tokenizer, device):
 
     with torch.no_grad():
         # input_tensor: [batch_size, seq_len]
-        hidden_0 = encoder(input_tensor)
+        encoder_outputs, hidden_0 = encoder(input_tensor)
         # hidden_0: [batch_size, hidden_dim]
         hidden_0 = hidden_0.unsqueeze(0)
         # hidden_0: [1, batch_size, hidden_dim]
@@ -23,7 +23,7 @@ def batch_predict(input_tensor, encoder, decoder, en_tokenizer, device):
         is_finished = [False] * batch_size
 
         for t in range(config.SEQ_LEN):
-            decoder_output, hidden_0 = decoder(decoder_input, hidden_0)
+            decoder_output, hidden_0 = decoder(decoder_input, hidden_0, encoder_outputs)
             # decoder_output: [batch_size, 1, vocab_size]
             decoder_output = torch.argmax(decoder_output, dim=-1, keepdim=False)
             # decoder_output: [batch_size, 1]

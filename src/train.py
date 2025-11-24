@@ -23,7 +23,7 @@ def train_one_epoch(dataloader, encoder, decoder, en_tokenizer, loss_function, o
 
         inputs, targets = inputs.to(device), targets.to(device)
         # inputs: [batch_size, seq_len]
-        context_vector = encoder(inputs)
+        encoder_outputs, context_vector = encoder(inputs)
         # hidden_0: [batch_size, hidden_dim*2]
         hidden_0 = context_vector.unsqueeze(0)
         # hidden_0: [1, batch_size, hidden_dim*2]
@@ -33,7 +33,7 @@ def train_one_epoch(dataloader, encoder, decoder, en_tokenizer, loss_function, o
         generate_list = []
 
         for t in range(1, targets.shape[1]):
-            decoder_output, hidden_0 = decoder(decoder_input, hidden_0)
+            decoder_output, hidden_0 = decoder(decoder_input, hidden_0, encoder_outputs)
             # decoder_output: [batch_size, 1, vocab_size]
             decoder_input = targets[:, t:t + 1]
             # decoder_input: [batch_size, 1]
